@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desafio dos Fonemas - Prof. Paulo Bispo</title>
+    <style>
+        /* Reset e configurações base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        /* Container principal */
+        .app-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Tela de boas-vindas */
+        .welcome-screen {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin: auto;
+            max-width: 600px;
+            animation: slideUp 0.8s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Header da aplicação */
+        .app-header {
+            margin-bottom: 30px;
+        }
+
+        .app-title {
+            font-size: 2.5em;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .app-subtitle {
+            font-size: 1.2em;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        /* Informações do professor */
+        .professor-info {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .professor-info::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: shine 3s ease-in-out infinite;
+        }
+
+        @keyframes shine {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(180deg); }
+        }
+
+        .professor-name {
+            font-size: 1.4em;
+            font-weight: bold;
+            margin-bottom: 5px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .professor-subject {
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .professor-quote {
+            font-style: italic;
+            font-size: 1em;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Ícone do livro com Wi-Fi */
+        .book-wifi-icon {
+            margin: 30px 0;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .book-wifi-svg {
+            width: 120px;
+            height: 120px;
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.2));
+        }
+
+        /* Formulário de dados do aluno */
+        .student-form {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border: 2px solid #e9ecef;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: bold;
+            color: #495057;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* Botões */
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+            min-width: 200px;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        .btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Tela do quiz */
+        .quiz-screen {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            padding: 30px;
+            margin: auto;
+            max-width: 800px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Barra de progresso */
+        .progress-container {
+            background: #e9ecef;
+            border-radius: 15px;
+            height: 20px;
+            margin-bottom: 30px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-bar {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            height: 100%;
+            border-radius: 15px;
+            transition: width 0.5s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* Indicador de nível */
+        .level-indicator {
+            text-align: center;
+            margin-bottom: 25px;
+            padding: 15px;
+            background: linear-gradient(135deg, #fff, #f8f9fa);
+            border-radius: 15px;
+            border: 2px solid #e9ecef;
+        }
+
+        .level-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .level-1 { background: linear-gradient(135deg, #4facfe, #00f2fe); color: white; }
+        .level-2 { background: linear-gradient(135deg, #fad961, #f76b1c); color: white; }
+        .level-3 { background: linear-gradient(135deg, #fa709a, #fee140); color: white; }
+
+        /* Pergunta */
+        .question-container {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            border-left: 5px solid #667eea;
+        }
+
+        .question-number {
+            font-size: 0.9em;
+            color: #6c757d;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .question-text {
+            font-size: 1.3em;
+            color: #343a40;
+            line-height: 1.5;
+            font-weight: 500;
+        }
+
+        /* Alternativas */
+        .alternatives-container {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .alternative {
+            background: white;
+            border: 2px solid #dee2e6;
+            border-radius: 15px;
+            padding: 18px 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .alternative::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .alternative:hover::before {
+            left: 100%;
+        }
+
+        .alternative:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.2);
+        }
+
+        .alternative.correct {
+            background: linear-gradient(135deg, #d4edda, #c3e6cb);
+            border-color: #28a745;
+            color: #155724;
+        }
+
+        .alternative.incorrect {
+            background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+            border-color: #dc3545;
+            color: #721c24;
+        }
+
+        .alternative.disabled {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        .alternative-letter {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            font-weight: bold;
+            margin-right: 15px;
+            font-size: 0.9em;
+        }
+
+        .alternative-text {
+            font-size: 1.1em;
+            line-height: 1.4;
+        }
+
+        /* Feedback */
+        .feedback {
+            text-align: center;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            font-size: 1.2em;
+            font-weight: bold;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .feedback.correct {
+            background: linear-gradient(135deg, #d4edda, #c3e6cb);
+            color: #155724;
+            border: 2px solid #28a745;
+        }
+
+        .feedback.incorrect {
+            background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+            color: #721c24;
+            border: 2px solid #dc3545;
+        }
+
+        /* Tela de resultado */
+        .result-screen {
+            background: white;
+            border-radius: 25px;
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            margin: auto;
+            max-width: 600px;
+            border: 3px solid #667eea;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .result-screen::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(102,126,234,0.1) 0%, transparent 70%);
+            animation: rotate 10s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .result-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .result-title {
+            font-size: 2.5em;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 30px;
+        }
+
+        .student-info {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border-left: 5px solid #667eea;
+        }
+
+        .student-name {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #343a40;
+            margin-bottom: 10px;
+        }
+
+        .student-grade {
+            font-size: 1.2em;
+            color: #6c757d;
+            margin-bottom: 20px;
+        }
+
+        .score-display {
+            font-size: 3em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .score-details {
+            font-size: 1.1em;
+            color: #6c757d;
+            margin-bottom: 25px;
+        }
+
+        .motivation-message {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            font-size: 1.2em;
+            line-height: 1.5;
+        }
+
+        .result-footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e9ecef;
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+
+        /* Utilitários */
+        .hidden {
+            display: none !important;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .mb-20 {
+            margin-bottom: 20px;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .app-container {
+                padding: 15px;
+            }
+
+            .welcome-screen,
+            .quiz-screen,
+            .result-screen {
+                padding: 25px 20px;
+                margin: 10px;
+            }
+
+            .app-title {
+                font-size: 2em;
+            }
+
+            .book-wifi-svg {
+                width: 80px;
+                height: 80px;
+            }
+
+            .alternatives-container {
+                gap: 12px;
+            }
+
+            .alternative {
+                padding: 15px 20px;
+            }
+
+            .question-text {
+                font-size: 1.1em;
+            }
+
+            .result-title {
+                font-size: 2em;
+            }
+
+            .score-display {
+                font-size: 2.5em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .app-title {
+                font-size: 1.7em;
+            }
+
+            .professor-name {
+                font-size: 1.2em;
+            }
+
+            .btn {
+                min-width: 160px;
+                padding: 12px 25px;
+                font-size: 1em;
+            }
+
+            .alternative-letter {
+                width: 25px;
+                height: 25px;
+                line-height: 25px;
+                font-size: 0.8em;
+            }
+
+            .alternative-text {
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Tela de Boas-vindas -->
+        <div id="welcomeScreen" class="welcome-screen">
+            <div class="app-header">
+                <h1 class="app-title">🎯 Desafio dos Fonemas</h1>
+                <p class="app-subtitle">Teste seus conhecimentos sobre sons da fala!</p>
+            </div>
+
+            <div class="professor-info">
+                <div class="professor-name">📚 Prof. Paulo Bispo</div>
+                <div class="professor-subject">Língua Portuguesa</div>
+                <div class="professor-quote">"Educar com amor, inovar com paixão."</div>
+            </div>
+
+            <div class="book-wifi-icon">
+                <svg class="book-wifi-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Livro -->
+                    <rect x="40" y="120" width="80" height="60" rx="5" fill="#667eea" stroke="#5a67d8" stroke-width="2"/>
+                    <rect x="45" y="125" width="70" height="50" rx="3" fill="#764ba2"/>
+                    <line x1="50" y1="135" x2="110" y2="135" stroke="white" stroke-width="2"/>
+                    <line x1="50" y1="145" x2="105" y2="145" stroke="white" stroke-width="2"/>
+                    <line x1="50" y1="155" x2="100" y2="155" stroke="white" stroke-width="2"/>
+                    <line x1="50" y1="165" x2="95" y2="165" stroke="white" stroke-width="2"/>
+                    
+                    <!-- Sinais Wi-Fi -->
+                    <path d="M 80 20 Q 120 40 160 20" stroke="#667eea" stroke-width="4" fill="none" opacity="0.8">
+                        <animate attributeName="opacity" values="0.3;1;0.3" dur="2s" repeatCount="indefinite"/>
+                    </path>
+                    <path d="M 80 35 Q 110 50 140 35" stroke="#764ba2" stroke-width="4" fill="none" opacity="0.6">
+                        <animate attributeName="opacity" values="0.3;1;0.3" dur="2s" repeatCount="indefinite" begin="0.5s"/>
+                    </path>
+                    <path d="M 80 50 Q 100 60 120 50" stroke="#667eea" stroke-width="4" fill="none" opacity="0.4">
+                        <animate attributeName="opacity" values="0.3;1;0.3" dur="2s" repeatCount="indefinite" begin="1s"/>
+                    </path>
+                    
+                    <!-- Pontos flutuantes -->
+                    <circle cx="90" cy="70" r="3" fill="#ffd700">
+                        <animate attributeName="cy" values="70;60;70" dur="3s" repeatCount="indefinite"/>
+                    </circle>
+                    <circle cx="110" cy="80" r="2" fill="#ff6b6b">
+                        <animate attributeName="cy" values="80;70;80" dur="3s" repeatCount="indefinite" begin="1s"/>
+                    </circle>
+                    <circle cx="130" cy="65" r="2.5" fill="#4ecdc4">
+                        <animate attributeName="cy" values="65;55;65" dur="3s" repeatCount="indefinite" begin="2s"/>
+                    </circle>
+                </svg>
+            </div>
+
+            <div class="student-form">
+                <div class="form-group">
+                    <label class="form-label" for="studentName">👤 Nome Completo:</label>
+                    <input type="text" id="studentName" class="form-input" placeholder="Digite seu nome completo" maxlength="50">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="studentGrade">🎓 Série:</label>
+                    <select id="studentGrade" class="form-input">
+                        <option value="">Selecione sua série</option>
+                        <option value="6º Ano">6º Ano</option>
+                        <option value="7º Ano">7º Ano</option>
+                        <option value="8º Ano">8º Ano</option>
+                        <option value="9º Ano">9º Ano</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="btn" onclick="startQuiz()">
+                🚀 Começar Atividade
+            </button>
+        </div>
+
+        <!-- Tela do Quiz -->
+        <div id="quizScreen" class="quiz-screen hidden">
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar" style="width: 0%"></div>
+            </div>
+
+            <div class="level-indicator">
+                <div class="level-badge" id="levelBadge">Nível 1 - Iniciante</div>
+                <div>Pergunta <span id="questionNumber">1</span> de 30</div>
+            </div>
+
+            <div class="question-container">
+                <div class="question-number">Questão <span id="currentQuestionNum">1</span></div>
+                <div class="question-text" id="questionText"></div>
+            </div>
+
+            <div class="alternatives-container" id="alternativesContainer"></div>
+
+            <div id="feedback" class="feedback hidden"></div>
+        </div>
+
+        <!-- Tela de Resultado -->
+        <div id="resultScreen" class="result-screen hidden">
+            <div class="result-content">
+                <h1 class="result-title">🏆 Atividade Concluída!</h1>
+                
+                <div class="student-info">
+                    <div class="student-name" id="resultName"></div>
+                    <div class="student-grade" id="resultGrade"></div>
+                </div>
+
+                <div class="score-display" id="scoreDisplay">0/30</div>
+                <div class="score-details">Acertos em 30 perguntas</div>
+
+                <div class="motivation-message" id="motivationMessage"></div>
+
+                <div class="result-footer">
+                    <div>📚 Prof. Paulo Bispo - Língua Portuguesa</div>
+                    <div>"Educar com amor, inovar com paixão."</div>
+                    <div style="margin-top: 15px; font-size: 0.8em;">
+                        📅 Atividade realizada em: <span id="currentDate"></span>
+                    </div>
+                </div>
+
+                <button class="btn" onclick="restartQuiz()" style="margin-top: 30px;">
+                    🔄 Fazer Novamente
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Banco de dados de perguntas sobre fonemas
+        const questions = [
+            // NÍVEL 1 - FÁCIL (1-10)
+            {
+                question: "Quantas letras tem a palavra 'casa' e quantos fonemas ela possui?",
+                alternatives: ["4 letras e 4 fonemas", "4 letras e 3 fonemas", "3 letras e 4 fonemas", "4 letras e 5 fonemas"],
+                correct: 0,
+                level: 1
+            },
+            {
+                question: "Qual das palavras abaixo possui um dígrafo?",
+                alternatives: ["mesa", "carro", "bola", "pato"],
+                correct: 1,
+                level: 1
+            },
+            {
+                question: "A palavra 'queijo' possui quantos fonemas?",
+                alternatives: ["6 fonemas", "5 fonemas", "4 fonemas", "3 fonemas"],
+                correct: 1,
+                level: 1
+            },
+            {
+                question: "Qual é a diferença entre letra e fonema?",
+                alternatives: ["Não há diferença", "Letra é o som, fonema é o símbolo", "Letra é o símbolo, fonema é o som", "Ambos representam a mesma coisa"],
+                correct: 2,
+                level: 1
+            },
+            {
+                question: "Quantas vogais existem no português?",
+                alternatives: ["4", "5", "6", "7"],
+                correct: 1,
+                level: 1
+            },
+            {
+                question: "A palavra 'filho' contém qual tipo de encontro?",
+                alternatives: ["Encontro vocálico", "Dígrafo", "Encontro consonantal", "Tritongo"],
+                correct: 1,
+                level: 1
+            },
+            {
+                question: "Em qual palavra o 'x' tem som de /ks/?",
+                alternatives: ["xícara", "exemplo", "próximo", "anexo"],
+                correct: 3,
+                level: 1
+            },
+            {
+                question: "Qual palavra possui encontro vocálico?",
+                alternatives: ["escola", "saudade", "professor", "livro"],
+                correct: 1,
+                level: 1
+            },
+            {
+                question: "O dígrafo 'ch' aparece em qual palavra?",
+                alternatives: ["cama", "cachorro", "casa", "escola"],
+                correct: 1,
+                level: 1
+            },
+            {
+                question: "Quantos fonemas tem a palavra 'água'?",
+                alternatives: ["4 fonemas", "3 fonemas", "5 fonemas", "2 fonemas"],
+                correct: 0,
+                level: 1
+            },
+
+            // NÍVEL 2 - MÉDIO (11-20)
+            {
+                question: "A sequência 'qu' em 'quente' representa quantos fonemas?",
+                alternatives: ["2 fonemas", "1 fonema", "3 fonemas", "0 fonemas"],
+                correct: 1,
+                level: 2
+            },
+            {
+                question: "Qual palavra apresenta um encontro consonantal?",
+                alternatives: ["carro", "classe", "filho", "senha"],
+                correct: 1,
+                level: 2
+            },
+            {
+                question: "Em 'exceção', quantos fonemas possui a palavra?",
+                alternatives: ["8 fonemas", "7 fonemas", "6 fonemas", "5 fonemas"],
+                correct: 2,
+                level: 2
+            },
+            {
+                question: "Qual alternativa apresenta um tritongo?",
+                alternatives: ["saguão", "Paraguai", "muito", "sério"],
+                correct: 1,
+                level: 2
+            },
+            {
+                question: "A palavra 'campo' possui qual tipo de encontro consonantal?",
+                alternatives: ["mp", "cp", "po", "Não possui"],
+                correct: 0,
+                level: 2
+            },
+            {
+                question: "Em qual palavra o 's' tem som de /z/?",
+                alternatives: ["sapo", "casa", "pessoa", "massa"],
+                correct: 1,
+                level: 2
+            },
+            {
+                question: "Quantos dígrafos existem na palavra 'chuva'?",
+                alternatives: ["nenhum", "1 dígrafo", "2 dígrafos", "3 dígrafos"],
+                correct: 1,
+                level: 2
+            },
+            {
+                question: "Qual palavra possui hiato?",
+                alternatives: ["saudade", "saúde", "coisa", "muito"],
+                correct: 1,
+                level: 2
+            },
+            {
+                question: "O dígrafo 'lh' em 'trabalho' representa:",
+                alternatives: ["2 fonemas", "1 fonema", "3 fonemas", "nenhum fonema"],
+                correct: 1,
+                level: 2
+            },
+            {
+                question: "Em 'aquele', a sequência 'qu' representa:",
+                alternatives: ["som de /ku/", "som de /k/", "som de /kw/", "dois fonemas"],
+                correct: 1,
+                level: 2
+            },
+
+            // NÍVEL 3 - DIFÍCIL (21-30)
+            {
+                question: "Quantos fonemas possui a palavra 'complexo'?",
+                alternatives: ["8 fonemas", "7 fonemas", "6 fonemas", "9 fonemas"],
+                correct: 1,
+                level: 3
+            },
+            {
+                question: "Identifique o erro na análise fonética da palavra 'extinção':",
+                alternatives: ["Possui 8 fonemas", "Tem dígrafo nasal", "O 'x' tem som de /s/", "Possui encontro consonantal"],
+                correct: 2,
+                level: 3
+            },
+            {
+                question: "Em 'bissexto', quantos fonemas existem?",
+                alternatives: ["8 fonemas", "7 fonemas", "6 fonemas", "5 fonemas"],
+                correct: 2,
+                level: 3
+            },
+            {
+                question: "Qual palavra possui APENAS encontros consonantais?",
+                alternatives: ["problema", "instrumento", "importante", "transporte"],
+                correct: 3,
+                level: 3
+            },
+            {
+                question: "Na palavra 'desçam', a letra 'ç' representa:",
+                alternatives: ["O fonema /s/", "O fonema /z/", "O fonema /k/", "Dois fonemas"],
+                correct: 0,
+                level: 3
+            },
+            {
+                question: "Quantos dígrafos possui a palavra 'piscina'?",
+                alternatives: ["nenhum", "1 dígrafo", "2 dígrafos", "3 dígrafos"],
+                correct: 1,
+                level: 3
+            },
+            {
+                question: "Em 'guerra', as letras 'gu' representam:",
+                alternatives: ["2 fonemas", "1 fonema", "1 fonema e meio", "3 fonemas"],
+                correct: 1,
+                level: 3
+            },
+            {
+                question: "Qual sequência apresenta APENAS hiatos?",
+                alternatives: ["saúde, coelho, muito", "país, saída, coordenar", "saudade, apoio, series", "ruim, muito, sério"],
+                correct: 1,
+                level: 3
+            },
+            {
+                question: "A palavra 'enxaqueca' possui quantos fonemas?",
+                alternatives: ["9 fonemas", "8 fonemas", "7 fonemas", "6 fonemas"],
+                correct: 1,
+                level: 3
+            },
+            {
+                question: "Em fonética, qual afirmação está INCORRETA?",
+                alternatives: ["Dígrafo são duas letras que representam um só som", "Todo encontro de duas vogais é ditongo", "Encontro consonantal são duas consoantes na mesma sílaba", "Fonema é a menor unidade sonora da fala"],
+                correct: 1,
+                level: 3
+            }
+        ];
+
+        // Variáveis do jogo
+        let currentQuestion = 0;
+        let score = 0;
+        let studentName = '';
+        let studentGrade = '';
+        let selectedAnswer = null;
+        let gameFinished = false;
+
+        // Função para iniciar o quiz
+        function startQuiz() {
+            const name = document.getElementById('studentName').value.trim();
+            const grade = document.getElementById('studentGrade').value;
+
+            if (!name || !grade) {
+                alert('Por favor, preencha seu nome e série antes de começar!');
+                return;
+            }
+
+            studentName = name;
+            studentGrade = grade;
+
+            // Esconder tela de boas-vindas e mostrar quiz
+            document.getElementById('welcomeScreen').classList.add('hidden');
+            document.getElementById('quizScreen').classList.remove('hidden');
+
+            // Carregar primeira pergunta
+            loadQuestion();
+        }
+
+        // Função para carregar uma pergunta
+        function loadQuestion() {
+            if (currentQuestion >= questions.length) {
+                showResults();
+                return;
+            }
+
+            const question = questions[currentQuestion];
+            
+            // Atualizar indicadores de progresso
+            updateProgress();
+            updateLevelIndicator();
+
+            // Mostrar pergunta
+            document.getElementById('questionText').textContent = question.question;
+            document.getElementById('currentQuestionNum').textContent = currentQuestion + 1;
+            document.getElementById('questionNumber').textContent = currentQuestion + 1;
+
+            // Gerar alternativas
+            const container = document.getElementById('alternativesContainer');
+            container.innerHTML = '';
+
+            question.alternatives.forEach((alt, index) => {
+                const div = document.createElement('div');
+                div.className = 'alternative';
+                div.onclick = () => selectAnswer(index);
+                
+                div.innerHTML = `
+                    <span class="alternative-letter">${String.fromCharCode(65 + index)}</span>
+                    <span class="alternative-text">${alt}</span>
+                `;
+                
+                container.appendChild(div);
+            });
+
+            // Esconder feedback
+            document.getElementById('feedback').classList.add('hidden');
+            selectedAnswer = null;
+        }
+
+        // Função para selecionar resposta
+        function selectAnswer(answerIndex) {
+            if (selectedAnswer !== null) return; // Evitar múltiplas seleções
+
+            selectedAnswer = answerIndex;
+            const question = questions[currentQuestion];
+            const alternatives = document.querySelectorAll('.alternative');
+
+            // Desabilitar todas as alternativas
+            alternatives.forEach(alt => alt.classList.add('disabled'));
+
+            // Marcar resposta correta e incorreta
+            alternatives[question.correct].classList.add('correct');
+            
+            if (answerIndex !== question.correct) {
+                alternatives[answerIndex].classList.add('incorrect');
+            }
+
+            // Verificar se acertou
+            const isCorrect = answerIndex === question.correct;
+            if (isCorrect) {
+                score++;
+            }
+
+            // Mostrar feedback
+            showFeedback(isCorrect);
+
+            // Avançar para próxima pergunta após 2 segundos
+            setTimeout(() => {
+                currentQuestion++;
+                loadQuestion();
+            }, 2500);
+        }
+
+        // Função para mostrar feedback
+        function showFeedback(isCorrect) {
+            const feedback = document.getElementById('feedback');
+            feedback.classList.remove('hidden');
+            
+            if (isCorrect) {
+                feedback.className = 'feedback correct';
+                feedback.innerHTML = '🎉 <strong>Correto!</strong> Muito bem!';
+            } else {
+                feedback.className = 'feedback incorrect';
+                feedback.innerHTML = '❌ <strong>Ops!</strong> A resposta correta é a alternativa ' + 
+                                   String.fromCharCode(65 + questions[currentQuestion].correct) + '.';
+            }
+        }
+
+        // Função para atualizar barra de progresso
+        function updateProgress() {
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        // Função para atualizar indicador de nível
+        function updateLevelIndicator() {
+            const levelBadge = document.getElementById('levelBadge');
+            
+            if (currentQuestion < 10) {
+                levelBadge.className = 'level-badge level-1';
+                levelBadge.textContent = 'Nível 1 - Iniciante';
+            } else if (currentQuestion < 20) {
+                levelBadge.className = 'level-badge level-2';
+                levelBadge.textContent = 'Nível 2 - Intermediário';
+            } else {
+                levelBadge.className = 'level-badge level-3';
+                levelBadge.textContent = 'Nível 3 - Avançado';
+            }
+        }
+
+        // Função para mostrar resultados
+        function showResults() {
+            // Esconder quiz e mostrar resultados
+            document.getElementById('quizScreen').classList.add('hidden');
+            document.getElementById('resultScreen').classList.remove('hidden');
+
+            // Preencher informações do aluno
+            document.getElementById('resultName').textContent = `👤 ${studentName}`;
+            document.getElementById('resultGrade').textContent = `🎓 ${studentGrade}`;
+            document.getElementById('scoreDisplay').textContent = `${score}/30`;
+
+            // Data atual
+            const today = new Date();
+            const dateStr = today.toLocaleDateString('pt-BR');
+            document.getElementById('currentDate').textContent = dateStr;
+
+            // Mensagem motivacional baseada no desempenho
+            const percentage = (score / 30) * 100;
+            let message = '';
+
+            if (percentage >= 90) {
+                message = '🌟 <strong>EXCELENTE!</strong> Você domina completamente o tema dos fonemas! Parabéns pela dedicação aos estudos!';
+            } else if (percentage >= 80) {
+                message = '🎯 <strong>MUITO BOM!</strong> Você tem um ótimo conhecimento sobre fonemas! Continue assim!';
+            } else if (percentage >= 70) {
+                message = '👏 <strong>BOM TRABALHO!</strong> Você está no caminho certo! Revise alguns conceitos e continue praticando!';
+            } else if (percentage >= 60) {
+                message = '📚 <strong>CONTINUE ESTUDANDO!</strong> Você já sabe bastante, mas pode melhorar ainda mais com um pouco mais de estudo!';
+            } else if (percentage >= 50) {
+                message = '💪 <strong>NÃO DESISTA!</strong> Você está aprendendo! Revise o conteúdo e tente novamente. O progresso virá!';
+            } else {
+                message = '🎯 <strong>OPORTUNIDADE DE CRESCER!</strong> Este é o momento perfeito para revisar o conteúdo. Cada erro é uma chance de aprender!';
+            }
+
+            document.getElementById('motivationMessage').innerHTML = message;
+            gameFinished = true;
+        }
+
+        // Função para reiniciar o quiz
+        function restartQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            selectedAnswer = null;
+            gameFinished = false;
+
+            // Limpar formulário
+            document.getElementById('studentName').value = '';
+            document.getElementById('studentGrade').value = '';
+
+            // Mostrar tela inicial
+            document.getElementById('resultScreen').classList.add('hidden');
+            document.getElementById('welcomeScreen').classList.remove('hidden');
+        }
+
+        // Prevenir o usuário de sair acidentalmente durante o quiz
+        window.addEventListener('beforeunload', function (e) {
+            if (currentQuestion > 0 && !gameFinished) {
+                e.preventDefault();
+                e.returnValue = 'Você tem certeza que deseja sair? Seu progresso será perdido.';
+                return 'Você tem certeza que deseja sair? Seu progresso será perdido.';
+            }
+        });
+
+        // Carregar a aplicação quando a página estiver pronta
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('App de Fonemas carregado com sucesso!');
+            console.log(`Total de perguntas: ${questions.length}`);
+            
+            // Verificar se todas as perguntas têm a estrutura correta
+            questions.forEach((q, index) => {
+                if (!q.question || !q.alternatives || q.alternatives.length !== 4 || q.correct === undefined) {
+                    console.error(`Erro na pergunta ${index + 1}:`, q);
+                }
+            });
+        });
+
+        // Função para permitir Enter no campo de nome
+        document.getElementById('studentName').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('studentGrade').focus();
+            }
+        });
+
+        // Função para permitir Enter no campo de série
+        document.getElementById('studentGrade').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                startQuiz();
+            }
+        });
+
+        // Adicionar suporte a teclado para navegação
+        document.addEventListener('keydown', function(e) {
+            // Durante o quiz, permitir navegação com números 1-4
+            if (!document.getElementById('quizScreen').classList.contains('hidden') && selectedAnswer === null) {
+                const key = parseInt(e.key);
+                if (key >= 1 && key <= 4) {
+                    selectAnswer(key - 1);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
